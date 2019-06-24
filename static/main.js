@@ -49,8 +49,13 @@ class Profile {
     };
 };
 
+function ggetStocks() {
+    let stocksArr = ApiConnector.getStocks();
+    
+    return stocksArr;
+};
 
-
+console.log(ggetStocks());
 
 function main(){
     const Ivan = new Profile({
@@ -67,7 +72,7 @@ function main(){
         if (err) {
             console.error('Error during creating Ivan');
         } else {
-            console.log(`${usename} is created`);
+            console.log(`${username} is created`);
         };
     });
     // после того, как мы авторизовали пользователя, добавляем ему денег в кошелек
