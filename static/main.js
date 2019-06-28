@@ -11,9 +11,9 @@ class Profile {
         password,
     }, callback) {
         return ApiConnector.createUser({
-            username,
-            name: { firstName, lastName },
-            password,
+            username: this.username,
+            name: this.name,
+            password: this.password,
         }, (err, data) => {
             console.log(`Creating user ${this.username}`);
             callback(err, data);
@@ -50,29 +50,29 @@ class Profile {
 };
 
 function ggetStocks() {
-    let stocksArr = ApiConnector.getStocks();
-    
-    return stocksArr;
+    return ApiConnector.getStocks((err, data) => {
+        console.log('Getting stocks info');
+        callback(err, data);
+    });;
 };
 
-console.log(ggetStocks());
+let stocksArr = ggetStocks();
+console.log(stocksArr);
 
-function main(){
+//console.log(typeof stocksArr);
+
+function main() {
     const Ivan = new Profile({
-                    username: 'ivan',
-                    name: { firstName: 'Ivan', lastName: 'Chernyshev' },
-                    password: 'ivanspass',
-                });
-    // сначала создаем и авторизуем пользователя
-    Ivan.createUser({
         username: 'ivan',
         name: { firstName: 'Ivan', lastName: 'Chernyshev' },
         password: 'ivanspass',
-        }, (err, data) =>{
+    });
+    // сначала создаем и авторизуем пользователя
+    Ivan.createUser((err, data) => {
         if (err) {
             console.error('Error during creating Ivan');
         } else {
-            console.log(`${username} is created`);
+            console.log(`${this.username} is created`);
         };
     });
     // после того, как мы авторизовали пользователя, добавляем ему денег в кошелек
