@@ -5,11 +5,7 @@ class Profile {
         this.passworrd = obj.password
     }
 
-     createUser({
-        username,
-        name: { firstName, lastName },
-        password,
-    }, callback) {
+     createUser(callback) {
         return ApiConnector.createUser({
             username: this.username,
             name: this.name,
@@ -20,7 +16,7 @@ class Profile {
         });
     };
 
-     performLogin({ username, password }, callback) {
+     performLogin(callback) {
         return ApiConnector.performLogin({ username, password }, (err, data) => {
             console.log(`Authorizing user ${this.username}`);
             callback(err, data);
@@ -49,14 +45,20 @@ class Profile {
     };
 };
 
-function ggetStocks() {
+function ggetStocks(callback) {
     return ApiConnector.getStocks((err, data) => {
         console.log('Getting stocks info');
         callback(err, data);
     });;
 };
 
-let stocksArr = ggetStocks();
+let stocksArr = ggetStocks((err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log(data);
+    }
+  });
 console.log(stocksArr);
 
 //console.log(typeof stocksArr);
@@ -67,22 +69,34 @@ function main() {
         name: { firstName: 'Ivan', lastName: 'Chernyshev' },
         password: 'ivanspass',
     });
+
+    console.log(Ivan.name.lastName);
     // сначала создаем и авторизуем пользователя
     Ivan.createUser((err, data) => {
         if (err) {
-            console.error('Error during creating Ivan');
+            console.error(`Error during creating Ivan`);
         } else {
-            console.log(`${this.username} is created`);
+            console.log(data);
         };
     });
+
+    // Ivan.performLogin((err, data) => {
+    //     if (err) {
+    //         console.error(`Error during logging in as Ivan`);
+    //     } else {
+    //         console.log(data);
+    //     };
+    // });
+
     // после того, как мы авторизовали пользователя, добавляем ему денег в кошелек
-    Ivan.addMoney({ currency: 'RUB', amount: 100 }, (err, data) => {
-        if (err) {
-                console.error('Error during adding money to Ivan');
-        } else {
-                console.log(`Added 500000 euros to Ivan`);
-        };
-    });
+    
+    // Ivan.addMoney({ currency: 'RUB', amount: 100 }, (err, data) => {
+    //     if (err) {
+    //             console.error('Error during adding money to Ivan');
+    //     } else {
+    //             console.log(`Added 500000 euros to Ivan`);
+    //     };
+    // });
 };
 
 main();
