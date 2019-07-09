@@ -1,5 +1,3 @@
-let ok = [0];
-
 class Profile {
     constructor(obj) {
         this.username = obj.username,
@@ -15,12 +13,12 @@ class Profile {
         }, (err, data) => {
             console.log(`Creating user ${this.username}`);
             callback(err, data);   
-            console.log(err);  
+            console.log(err);
         });
         
     };
     
-     performLogin(callback) {
+    performLogin(callback) {
         return ApiConnector.performLogin({ 
             username: this.username,
             password: this.password,
@@ -43,18 +41,20 @@ class Profile {
         return ApiConnector.convertMoney({ fromCurrency, targetCurrency, targetAmount }, (err, data) => {
             console.log(`Converting ${fromCurrency} to ${targetAmount} ${targetCurrency}`);
             callback(err, data);
+            console.log(err);
         });
     };
 
     transferMoney({ to, amount }, callback) {
         return ApiConnector.addMoney({ to, amount }, (err, data) => {
-            console.log(`Tranfering ${amount} to ${to}`);
+            console.log(`Tranfering ${amount} of NETCOINS to ${to}`);
             callback(err, data);
+            console.log(err);
         });
     };
 };
 
-window.currentRate = 0;
+
 function ggetStocks(callback) {
     return ApiConnector.getStocks((err, data) => {
         console.log('Getting stocks info');
@@ -63,21 +63,6 @@ function ggetStocks(callback) {
     });;
 };
 
-let stocksArr = ggetStocks((err, data) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log(data);
-      //console.log(data[99]);
-      window.currentRate = data[99];
-      console.log(window.currentRate);
-    };
-    return window.currentRate;
-});
-console.log(stocksArr);
-console.log(window.currentRate);
-
-//console.log(stocksArr.length);
 
 function main() {
     const Ivan = new Profile({
@@ -85,65 +70,91 @@ function main() {
         name: { firstName: 'Ivan', lastName: 'Chernyshev' },
         password: 'ivanspass',
     });
+
+    const Petya = new Profile({
+        username: 'petya',
+        name: { firstName: 'Piotr', lastName: 'Boitsov' },
+        password: 'petyaspass',
+    });
     
     //console.log(Ivan.name.lastName);
     //console.log(Ivan.password);
     // сначала создаем и авторизуем пользователя
-    
-
-    function createUser1(){ 
-        return Ivan.createUser((err, data) => {
-        
+    let currentRate;
+    ggetStocks((err, data) => {
         if (err) {
-            console.error(`Error during creating Ivan`);
-            
+          console.error(err);
         } else {
-            
-            console.log(`User Ivan is created`);
             console.log(data);
-        };
-        
-    });
-    };
-
-    createUser1();
-    
-    function performLogin1(){
-       return Ivan.performLogin((err, data) => {
+            currentRate = data[99];
+            console.log(currentRate);
+  
+            Ivan.createUser((err, data) => {
                 if (err) {
-                    console.error(`Error during logging in as Ivan`);
+                    console.error(`Error during creating Ivan`);
                 } else {
-                    console.log('Ivan is authorized');
+                    console.log(`User Ivan is created`);
                     console.log(data);
-                };
-        });
-    };
-
-    setTimeout(performLogin1, 2000);
     
-    function addMoney1() {
-        return Ivan.addMoney({ currency: 'EUR', amount: 50000 }, (err, data) => {
-        if (err) {
-                console.error('Error during adding money to Ivan');
-        } else {
-                console.log(`Added 500000 euros to Ivan`);
-                console.log(data);
+                    Ivan.performLogin((err, data) => {
+                        if (err) {
+                            console.error(`Error during logging in as Ivan`);
+                        } else {
+                            console.log('Ivan is authorized');
+                            console.log(data);
+
+                            let amount1 = 50000;
+                            
+                            Ivan.addMoney({ currency: 'EUR', amount: amount1 }, (err, data) => {
+                                if (err) {
+                                    console.error('Error during adding money to Ivan');
+                                } else {
+                                    //amount1 = amount;
+                                    console.log(`Added ${amount1} euros to Ivan`);
+                                    console.log(data);
+                                    
+                                    let targetAmount1 = amount1 * currentRate.EUR_NETCOIN;
+                                    console.log(currentRate.EUR_NETCOIN);
+                                    console.log(targetAmount1);
+                                    let fromCurrency1 = 'EUR';
+                                    let targetCurrency1 = 'NETCOIN';
+                                    
+                                    Ivan.convertMoney({ fromCurrency: fromCurrency1, targetCurrency: targetCurrency1, targetAmount: targetAmount1 }, (err, data) => {
+                                        if (err) {
+                                            console.error(`Error during converting ${Ivan.username}'s money`);
+                                        } else {
+                                            console.log(`Converted ${fromCurrency1} to ${targetAmount1} ${targetCurrency1} to Ivan`);
+                                            console.log(data);
+          
+                                            Petya.createUser((err, data) => {
+                                                if (err) {
+                                                    console.error(`Error during creating Petya`);
+                                                } else {
+                                                    console.log(`User Petya is created`);
+                                                    console.log(data);
+
+                                                    let transferringAmount = 0.1 * targetAmount1;
+
+                                                    Ivan.transferMoney({ to: Petya.username, amount: transferringAmount}, (err, data) => {
+                                                        if (err) {
+                                                            console.error(`Error during transferring money to Petya`);
+                                                        } else {
+                                                            console.log(`${transferringAmount} of ${targetCurrency1} transferred`);
+                                                            console.log(data);
+                                                        }
+                                                    }); 
+                                                };
+                                            });        
+                                        };
+                                    });
+                                };
+                            });
+                        };
+                    });
+                };  
+            });
         };
     });
-    }
-
-    setTimeout(addMoney1, 4000);
-    //let targetAmount = stocksArr[stocksArr.length - 1];
-    //console.log(stocksArr.length);
-    //function 
-        
-    
-    
-    //после того, как мы авторизовали пользователя, добавляем ему денег в кошелек
-    
-    
 };
 
 main();
-
-//console.log(ok[0]);
