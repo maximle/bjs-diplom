@@ -12,8 +12,7 @@ class Profile {
             password: this.password,
         }, (err, data) => {
             console.log(`Creating user ${this.username}`);
-            callback(err, data);   
-            console.log(err);
+            callback(err, data);
         });
         
     };
@@ -25,7 +24,6 @@ class Profile {
         }, (err, data) => {
             console.log(`Authorizing user ${this.username}`);
             callback(err, data);
-            
         });
         
     };
@@ -41,15 +39,14 @@ class Profile {
         return ApiConnector.convertMoney({ fromCurrency, targetCurrency, targetAmount }, (err, data) => {
             console.log(`Converting ${fromCurrency} to ${targetAmount} ${targetCurrency}`);
             callback(err, data);
-            console.log(err);
+            //console.log(err);
         });
     };
 
     transferMoney({ to, amount }, callback) {
-        return ApiConnector.addMoney({ to, amount }, (err, data) => {
+        return ApiConnector.transferMoney({ to, amount }, (err, data) => {
             console.log(`Tranfering ${amount} of NETCOINS to ${to}`);
             callback(err, data);
-            console.log(err);
         });
     };
 };
@@ -77,8 +74,6 @@ function main() {
         password: 'petyaspass',
     });
     
-    //console.log(Ivan.name.lastName);
-    //console.log(Ivan.password);
     // сначала создаем и авторизуем пользователя
     let currentRate;
     ggetStocks((err, data) => {
@@ -87,21 +82,20 @@ function main() {
         } else {
             console.log(data);
             currentRate = data[99];
-            console.log(currentRate);
   
             Ivan.createUser((err, data) => {
                 if (err) {
                     console.error(`Error during creating Ivan`);
                 } else {
                     console.log(`User Ivan is created`);
-                    console.log(data);
+                    //console.log(data);
     
                     Ivan.performLogin((err, data) => {
                         if (err) {
                             console.error(`Error during logging in as Ivan`);
                         } else {
                             console.log('Ivan is authorized');
-                            console.log(data);
+                            //console.log(data);
 
                             let amount1 = 50000;
                             
@@ -109,13 +103,11 @@ function main() {
                                 if (err) {
                                     console.error('Error during adding money to Ivan');
                                 } else {
-                                    //amount1 = amount;
                                     console.log(`Added ${amount1} euros to Ivan`);
                                     console.log(data);
                                     
                                     let targetAmount1 = amount1 * currentRate.EUR_NETCOIN;
-                                    console.log(currentRate.EUR_NETCOIN);
-                                    console.log(targetAmount1);
+
                                     let fromCurrency1 = 'EUR';
                                     let targetCurrency1 = 'NETCOIN';
                                     
@@ -123,7 +115,7 @@ function main() {
                                         if (err) {
                                             console.error(`Error during converting ${Ivan.username}'s money`);
                                         } else {
-                                            console.log(`Converted ${fromCurrency1} to ${targetAmount1} ${targetCurrency1} to Ivan`);
+                                            console.log(`Converted ${Ivan.username}s ${fromCurrency1} to ${targetAmount1} ${targetCurrency1}`);
                                             console.log(data);
           
                                             Petya.createUser((err, data) => {
@@ -131,7 +123,7 @@ function main() {
                                                     console.error(`Error during creating Petya`);
                                                 } else {
                                                     console.log(`User Petya is created`);
-                                                    console.log(data);
+                                                    //console.log(data);
 
                                                     let transferringAmount = 0.1 * targetAmount1;
 
@@ -139,7 +131,7 @@ function main() {
                                                         if (err) {
                                                             console.error(`Error during transferring money to Petya`);
                                                         } else {
-                                                            console.log(`${transferringAmount} of ${targetCurrency1} transferred`);
+                                                            console.log(`${transferringAmount} of ${targetCurrency1}s transferred`);
                                                             console.log(data);
                                                         }
                                                     }); 
